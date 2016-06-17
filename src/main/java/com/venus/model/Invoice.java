@@ -3,6 +3,7 @@ package com.venus.model;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,8 +21,10 @@ public class Invoice implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @NotNull
     private String invoiceNumber;
 
+    @NotNull
     private Date invoiceDate;
 
     private Date dueDate;
@@ -37,6 +40,9 @@ public class Invoice implements Serializable {
 
     @OneToMany(mappedBy = "invoice",cascade = CascadeType.ALL)
     private Set<Item> items = new TreeSet<Item>();
+
+    @ManyToOne
+    private Party party;
 
     /**
      *
@@ -169,4 +175,13 @@ public class Invoice implements Serializable {
         this.status = status;
     }
 
+    public Party getParty() {
+        return party;
+    }
+
+    public void setParty(Party party) {
+        this.party = party;
+
+        party.getInvoices().add(this);
+    }
 }

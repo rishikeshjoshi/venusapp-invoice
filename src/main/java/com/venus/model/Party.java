@@ -3,7 +3,10 @@ package com.venus.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by hrishikeshjoshi on 6/14/16.
@@ -18,6 +21,9 @@ public class Party implements Serializable {
     private String name;
 
     private String address;
+
+    @OneToMany(mappedBy = "party")
+    private Set<Invoice> invoices = new HashSet<Invoice>();
 
     //default constructor
     Party(){
@@ -51,5 +57,13 @@ public class Party implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Set<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(Set<Invoice> invoices) {
+        this.invoices = invoices;
     }
 }

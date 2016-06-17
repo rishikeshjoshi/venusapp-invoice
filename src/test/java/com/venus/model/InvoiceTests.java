@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -152,11 +151,17 @@ public class InvoiceTests {
         invoice.deleteLineItem(item);
     }
 
-    //Util methods
-    private void addLineItems(Invoice invoice, Item... items) {
-        Arrays.stream(items).forEach(i -> {
-            invoice.addLineItem(i);
-        });
+    @Test
+    public void testPartyIsAddedForInvoice() {
+        final Party party = new Party("John Smith","Address 123");
+
+        invoice.setParty(party);
+        Assert.assertEquals("Party is set correctly", party, invoice.getParty());
+        Assert.assertTrue("Invoice is present for the party",party.getInvoices().stream().anyMatch(x -> {
+            return x.getParty().equals(party);
+        }));
+
+
     }
 
 
