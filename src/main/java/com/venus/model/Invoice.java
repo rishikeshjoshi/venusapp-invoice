@@ -1,5 +1,7 @@
 package com.venus.model;
 
+import org.springframework.util.Assert;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -34,7 +36,7 @@ public class Invoice implements Serializable {
     private InvoiceStatus status;
 
     @OneToMany(mappedBy = "invoice",cascade = CascadeType.ALL)
-    private Set<Item> items;
+    private Set<Item> items = new TreeSet<Item>();
 
     /**
      *
@@ -46,15 +48,37 @@ public class Invoice implements Serializable {
        }
 
        //Check if the line items are null or empty and initialize the line items for the invoice
-       if(this.items == null || items.isEmpty()) {
-           this.items = new TreeSet<Item>();
-       }
+       Assert.notNull(items,"Invoice Items is null.");
 
        this.items.add(item);
 
        //Calculate Net Total.
        calculateNetTotal();
+    }
 
+    /**
+     * Delete the line item from the invoice items.
+     * @param item
+     */
+    public void deleteLineItem(Item item) {
+        if(item == null) {
+            throw new IllegalArgumentException("Invoice Item cannot be null");
+        }
+
+        if(!items.contains(item)) {
+            throw new IllegalArgumentException("The given invoice item is not present in the invoice");
+        }
+
+        //Iterate over line items and then decrement each invoice item whose sequence number is greater than the number to be deleted.
+        items.forEach(i -> {
+            if(i.getSequenceNumber().compareTo(item.getSequenceNumber()) > 0) {
+                i.setSequenceNumber(i.getSequenceNumber().intValue()-1);
+            }
+        });
+
+        this.items.remove(item);
+
+        calculateNetTotal();
     }
 
     /**
@@ -144,4 +168,5 @@ public class Invoice implements Serializable {
     public void setStatus(InvoiceStatus status) {
         this.status = status;
     }
+
 }

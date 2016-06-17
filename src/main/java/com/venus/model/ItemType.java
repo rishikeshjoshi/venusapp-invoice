@@ -18,13 +18,10 @@ public class ItemType implements Serializable {
 
     private String itemType;
 
-    private String description;
-
     ItemType(){}
 
-    public ItemType(String itemType, String description) {
+    public ItemType(String itemType) {
         this.itemType = itemType;
-        this.description = description;
     }
 
     public Long getId() {
@@ -43,11 +40,4 @@ public class ItemType implements Serializable {
         this.itemType = itemType;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

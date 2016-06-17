@@ -3,16 +3,19 @@ package com.venus.model;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.OptionalInt;
 
 /**
  * Created by hrishikeshjoshi on 6/14/16.
  */
 @Entity
-public class Item {
+public class Item implements Comparable<Item> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    private Integer sequenceNumber;
 
     private BigDecimal unitPrice = new BigDecimal("0.0");
 
@@ -30,6 +33,33 @@ public class Item {
 
     private Date addedDate = new Date();
 
+    Item(){
+
+    }
+
+    public Item(Invoice invoice) {
+        this.invoice = invoice;
+
+        //Get sequence number for Invoice Item
+        final OptionalInt optionalInt = invoice.getItems().stream().mapToInt(x -> x.getSequenceNumber()).max();
+        final Integer max = optionalInt.isPresent()?optionalInt.getAsInt():new Integer(0);
+        this.sequenceNumber = max.intValue() + 1;
+
+        //TODO : Check if this is ok.
+        invoice.addLineItem(this);
+    }
+
+    public Item setUnitPriceAndQuantity(BigDecimal unitPrice, BigDecimal quantity) {
+        this.setUnitPrice(unitPrice);
+        this.setQuantity(quantity);
+        updateLineTotalAmount();
+        return this;
+    }
+
+    private void updateLineTotalAmount() {
+        this.setLineTotalAmount(unitPrice.multiply(quantity));
+    }
+
     //Getters and setters
     public Long getId() {
         return id;
@@ -45,6 +75,7 @@ public class Item {
 
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
+        updateLineTotalAmount();
     }
 
     public BigDecimal getQuantity() {
@@ -53,6 +84,7 @@ public class Item {
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
+        updateLineTotalAmount();
     }
 
     public BigDecimal getLineTotalAmount() {
@@ -93,5 +125,18 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(Integer sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
+    }
+
+    @Override
+    public int compareTo(Item o) {
+        return this.getSequenceNumber().compareTo(o.getSequenceNumber());
     }
 }
