@@ -1,13 +1,21 @@
-package com.venus.model;
+package com.venus.unit.model;
 
-import com.venus.util.TestUtils;
+import com.venus.model.Invoice;
+import com.venus.model.InvoiceStatus;
+import com.venus.model.Item;
+import com.venus.model.Party;
+import com.venus.unit.util.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by hrishikeshjoshi on 6/16/16.
@@ -16,9 +24,48 @@ public class InvoiceTests {
 
     private Invoice invoice;
 
+    private Validator validator;
+
     @Before
     public void init() {
         invoice = new Invoice();
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
+    }
+
+    @Test
+    public void testConstraintViolationsAreThrownForInvoiceWithEmptyInvoiceDate() {
+        invoice.setParty(new Party("ABC","ABD"));
+        invoice.setStatus(new InvoiceStatus("NEW"));
+        final Set<ConstraintViolation<Invoice>> constraintViolations = validator.validate(invoice);
+        Assert.assertTrue("Constraint Violations are raised",constraintViolations.stream().count() == 1 );
+
+        final Optional<ConstraintViolation<Invoice>> oinvoiceConstraintViolation = constraintViolations.stream().findFirst();
+        final ConstraintViolation<Invoice> invoiceConstraintViolation = oinvoiceConstraintViolation.get();
+        Assert.assertEquals("Constraint Violation not thrown for Property Path = 'InvoiceDate' ","invoiceDate",invoiceConstraintViolation.getPropertyPath().toString());
+    }
+
+    @Test
+    public void testConstraintViolationThrownWhenPartyIsNotSetForInvoice() {
+        invoice.setInvoiceDate(new Date());
+        invoice.setStatus(new InvoiceStatus("NEW"));
+        final Set<ConstraintViolation<Invoice>> constraintViolations = validator.validate(invoice);
+        Assert.assertTrue("Constraint Violations are raised",constraintViolations.stream().count() == 1 );
+
+        final Optional<ConstraintViolation<Invoice>> oinvoiceConstraintViolation = constraintViolations.stream().findFirst();
+        final ConstraintViolation<Invoice> invoiceConstraintViolation = oinvoiceConstraintViolation.get();
+        Assert.assertEquals("Constraint Violation not thrown for Property Path = 'Party' ","party",invoiceConstraintViolation.getPropertyPath().toString());
+    }
+
+    @Test
+    public void testConstraintViolationThrownWhenInvoiceStatusIsNotSetForInvoice() {
+        invoice.setInvoiceDate(new Date());
+        invoice.setParty(new Party("ABC","PQR"));
+        final Set<ConstraintViolation<Invoice>> constraintViolations = validator.validate(invoice);
+        Assert.assertTrue("Constraint Violations are raised",constraintViolations.stream().count() == 1 );
+
+        final Optional<ConstraintViolation<Invoice>> oinvoiceConstraintViolation = constraintViolations.stream().findFirst();
+        final ConstraintViolation<Invoice> invoiceConstraintViolation = oinvoiceConstraintViolation.get();
+        Assert.assertEquals("Constraint Violation not thrown for Property Path = 'Invoice Status' ","status",invoiceConstraintViolation.getPropertyPath().toString());
     }
 
     @Test

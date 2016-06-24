@@ -1,5 +1,6 @@
-package com.venus.model;
+package com.venus.unit.model;
 
+import com.venus.model.ItemType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,13 +14,13 @@ public class ItemTypeTests {
 
     @Before
     public void init() {
-        itemType = new ItemType();
+
     }
 
     @Test
     public void testItemTypeMatches() {
         final String itemTypeVal = "ITEM TYPE 1";
-        itemType.setItemType(itemTypeVal);
+        itemType = new ItemType(itemTypeVal);
 
         Assert.assertEquals("Item Type does not match",itemTypeVal,itemType.getItemType());
     }

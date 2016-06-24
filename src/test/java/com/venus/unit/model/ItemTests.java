@@ -1,5 +1,7 @@
-package com.venus.model;
+package com.venus.unit.model;
 
+import com.venus.model.Invoice;
+import com.venus.model.Item;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

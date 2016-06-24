@@ -5,10 +5,8 @@ import com.venus.model.ItemType;
 import com.venus.repository.InvoiceStatusRepository;
 import com.venus.repository.ItemTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
 /**
@@ -56,33 +54,5 @@ public class MasterDataInitialiser implements DataInitializer {
     @Autowired
     public void setProperties(ApplicationProperties properties) {
         this.properties = properties;
-    }
-}
-
-@Component
-@ConfigurationProperties(prefix = "venusapp.invoice")
-class ApplicationProperties {
-
-    @NotNull
-    private String invoiceStatusList;
-
-    @NotNull
-    private String itemTypeList;
-
-    //Getters and Setters
-    public String getInvoiceStatusList() {
-        return invoiceStatusList;
-    }
-
-    public void setInvoiceStatusList(String invoiceStatusList) {
-        this.invoiceStatusList = invoiceStatusList;
-    }
-
-    public String getItemTypeList() {
-        return itemTypeList;
-    }
-
-    public void setItemTypeList(String itemTypeList) {
-        this.itemTypeList = itemTypeList;
     }
 }

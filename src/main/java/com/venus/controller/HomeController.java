@@ -1,12 +1,12 @@
 package com.venus.controller;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Created by hrishikeshjoshi on 6/16/16.
  */
-@Controller
+@RestController
 @RequestMapping("/home")
 class HomeController {
 

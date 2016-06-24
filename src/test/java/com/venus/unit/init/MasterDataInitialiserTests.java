@@ -1,6 +1,7 @@
-package com.venus.init;
+package com.venus.unit.init;
 
 import com.venus.InvoiceApplication;
+import com.venus.init.ApplicationProperties;
 import com.venus.repository.InvoiceStatusRepository;
 import com.venus.repository.ItemTypeRepository;
 import org.junit.Assert;

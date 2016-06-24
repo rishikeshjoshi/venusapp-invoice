@@ -8,8 +8,9 @@ import org.springframework.stereotype.Repository;
  * Created by hrishikeshjoshi on 6/15/16.
  */
 @Repository
-public interface InvoiceStatusRepository extends CrudRepository<InvoiceStatus,Long> {
+public interface InvoiceStatusRepository extends CrudRepository<InvoiceStatus,String> {
 
 
+    InvoiceStatus findByValue(String value);
 
 }

@@ -5,8 +5,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 
 @SpringBootApplication
 public class InvoiceApplication {
@@ -21,6 +22,11 @@ public class InvoiceApplication {
 			//Init all the master data after the spring context has been loaded.
 			masterDataInitialiser.initialise();
 		};
+	}
+
+	@Bean
+	public ValidatorFactory validatorFactory() {
+		return Validation.buildDefaultValidatorFactory();
 	}
 }
 

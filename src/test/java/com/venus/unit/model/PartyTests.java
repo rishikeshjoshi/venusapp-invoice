@@ -1,5 +1,6 @@
-package com.venus.model;
+package com.venus.unit.model;
 
+import com.venus.model.Party;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,7 @@ public class PartyTests {
 
     @Before
     public void init() {
-        party = new Party();
+        party = new Party("Name","Address");
     }
 
     @Test

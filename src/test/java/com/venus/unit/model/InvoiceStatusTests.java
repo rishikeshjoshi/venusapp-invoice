@@ -1,5 +1,6 @@
-package com.venus.model;
+package com.venus.unit.model;
 
+import com.venus.model.InvoiceStatus;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,7 @@ public class InvoiceStatusTests {
 
     @Before
     public void init() {
-        invoiceStatus = new InvoiceStatus();
+
     }
 
     @Test
@@ -21,8 +22,7 @@ public class InvoiceStatusTests {
         final String value = "VALUE1";
         final String description = "This is a sample description";
 
-        invoiceStatus.setValue(value);
-        invoiceStatus.setDescription(description);
+        invoiceStatus = new InvoiceStatus(value,description);
 
         Assert.assertEquals("InvoiceStatus Value doesnt match",value,invoiceStatus.getValue());
         Assert.assertEquals("InvoiceStatus Description doesnt match",description,invoiceStatus.getDescription());
