@@ -62,6 +62,8 @@ public class InvoiceControllerTests {
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        invoiceRepository.deleteAll();
+        partyRepository.deleteAll();
     }
 
     @Test
@@ -109,11 +111,130 @@ public class InvoiceControllerTests {
         //Verify that invoices exists as arrays.
         mockMvc.perform(MockMvcRequestBuilders.get(URI_INVOICES_ALL))
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].invoiceNumber").value("INV001"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].invoiceNumber").value("INV001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].party.name").value("John Smith"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].status.value").value("NEW"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].invoiceDate").value("25-06-2016"));
+    }
 
 
+    @Test
+    public void testInvoicesAreReturnedForParty() throws Exception {
 
+        invoiceRepository.deleteAll();
+
+        //Delete and create a party.
+        partyRepository.deleteAll();
+
+        party = new Party("John Smith", "Address");
+        partyRepository.save(party);
+        Assert.assertNotEquals("Party is not saved",new Long(0), party.getId());
+
+        invoiceStatus = invoiceStatusRepository.findByValue("NEW");
+        Assert.assertNotNull("Invoice Status - NEW is not present in the master data", invoiceStatus);
+
+        //Create a new invoice
+        Invoice invoice = new Invoice();
+
+        invoice.setInvoiceNumber("INV001");
+        //Set Party
+        invoice.setParty(party);
+
+        //Set Invoice Status
+        invoice.setStatus(invoiceStatus);
+
+        //Set Invoice Date
+        invoice.setInvoiceDate(new Date());
+        try {
+            invoice = invoiceService.saveInvoice(invoice);
+        } catch (InvoiceServiceException e) {
+            Assert.fail("Exception thrown from the invoice service:" + e.getMessage());
+        }
+
+        Assert.assertNotEquals("Invoice is saved", null, invoice.getId());
+
+        //Verify that invoices exists as arrays.
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_INVOICES_BY_PARTY_ID+"/" + party.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].invoiceNumber").value("INV001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].invoiceDate").value("25-06-2016"));
+    }
+
+    @Test
+    public void testNoInvoicesAreReturnedForInvalidParty() throws Exception {
+
+        invoiceRepository.deleteAll();
+
+        party = new Party("John Smith", "Address");
+        partyRepository.save(party);
+        Assert.assertNotEquals("Party is not saved",new Long(0), party.getId());
+
+        invoiceStatus = invoiceStatusRepository.findByValue("NEW");
+        Assert.assertNotNull("Invoice Status - NEW is not present in the master data", invoiceStatus);
+
+        //Create a new invoice
+        Invoice invoice = new Invoice();
+
+        invoice.setInvoiceNumber("INV001");
+        //Set Party
+        invoice.setParty(party);
+
+        //Set Invoice Status
+        invoice.setStatus(invoiceStatus);
+
+        //Set Invoice Date
+        invoice.setInvoiceDate(new Date());
+        try {
+            invoice = invoiceService.saveInvoice(invoice);
+        } catch (InvoiceServiceException e) {
+            Assert.fail("Exception thrown from the invoice service:" + e.getMessage());
+        }
+
+        Assert.assertNotEquals("Invoice is saved", null, invoice.getId());
+
+        //Verify that invoices exists as arrays.
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_INVOICES_BY_PARTY_ID+"/" + 0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());
+    }
+
+    @Test
+    public void invoiceIsReturnedForInvoiceId() throws Exception {
+        //Create new party
+        party = new Party("John Smith", "Address");
+        partyRepository.save(party);
+        Assert.assertNotEquals("Party is not saved",new Long(0), party.getId());
+
+        invoiceStatus = invoiceStatusRepository.findByValue("NEW");
+        Assert.assertNotNull("Invoice Status - NEW is not present in the master data", invoiceStatus);
+
+        //Create a new invoice
+        Invoice invoice = new Invoice();
+
+        invoice.setInvoiceNumber("INV001");
+        //Set Party
+        invoice.setParty(party);
+
+        //Set Invoice Status
+        invoice.setStatus(invoiceStatus);
+
+        //Set Invoice Date
+        invoice.setInvoiceDate(new Date());
+        try {
+            invoice = invoiceService.saveInvoice(invoice);
+        } catch (InvoiceServiceException e) {
+            Assert.fail("Exception thrown from the invoice service:" + e.getMessage());
+        }
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/invoices/" + invoice.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.invoiceNumber").value("INV001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.invoiceDate").value("25-06-2016"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status.value").value("NEW"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.party.name").value("John Smith"));
 
     }
+
+
 
 }

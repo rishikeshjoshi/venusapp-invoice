@@ -50,4 +50,6 @@ public interface InvoiceService {
      */
     List<Invoice> getAllInvoices(Party party);
 
+
+
 }
