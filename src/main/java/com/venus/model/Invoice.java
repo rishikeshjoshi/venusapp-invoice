@@ -1,5 +1,6 @@
 package com.venus.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Invoice implements Serializable {
     private String invoiceNumber;
 
     @NotNull
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date invoiceDate;
 
     private Date dueDate;
@@ -95,7 +97,7 @@ public class Invoice implements Serializable {
     /**
      * Calculate net total for the invoice
      */
-    private void calculateNetTotal() {
+    void calculateNetTotal() {
         final BinaryOperator<BigDecimal> adder = (x, y) -> x.add(y);
         //maps from an Item object to a BigDecimal object.
         final Function<Item, BigDecimal> multiplier =

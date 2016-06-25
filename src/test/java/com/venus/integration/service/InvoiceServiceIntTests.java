@@ -9,6 +9,7 @@ import com.venus.repository.InvoiceStatusRepository;
 import com.venus.repository.PartyRepository;
 import com.venus.service.InvoiceService;
 import com.venus.service.exception.InvoiceServiceException;
+import com.venus.util.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,26 +74,7 @@ public class InvoiceServiceIntTests {
 
     @Test
     public void invoiceIsSavedWithCorrectAttributes() {
-        createInvoice(party);
-    }
-
-    private void createInvoice(Party party) {
-        Invoice invoice = new Invoice();
-        //Set Party
-        invoice.setParty(party);
-
-        //Set Invoice Status
-        invoice.setStatus(invoiceStatus);
-
-        //Set Invoice Date
-        invoice.setInvoiceDate(new Date());
-        try {
-            invoice = invoiceService.saveInvoice(invoice);
-        } catch (InvoiceServiceException e) {
-            Assert.fail("Exception thrown from the invoice service:" + e.getMessage());
-        }
-
-        Assert.assertNotEquals("Invoice is saved", null, invoice.getId());
+        TestUtils.createInvoice(party,invoiceStatus,invoiceService);
     }
 
     @Test(expected = InvoiceServiceException.class)
@@ -109,8 +91,8 @@ public class InvoiceServiceIntTests {
 
     @Test
     public void listOfInvoicesIsReturned() {
-        createInvoice(party);
-        createInvoice(party);
+        TestUtils.createInvoice(party,invoiceStatus,invoiceService);
+        TestUtils.createInvoice(party,invoiceStatus,invoiceService);
 
         final List<Invoice> allInvoices = invoiceService.getAllInvoices();
         Assert.assertNotNull("No invoices returned.", allInvoices);
@@ -129,7 +111,8 @@ public class InvoiceServiceIntTests {
     @Test
     public void invoicesAreReturnedForAGivenParty() {
         //Created two invoices.
-        createInvoice(party);createInvoice(party);
+        TestUtils.createInvoice(party,invoiceStatus,invoiceService);
+        TestUtils.createInvoice(party,invoiceStatus,invoiceService);
 
         List<Invoice> invoicesForParty = invoiceService.getAllInvoices(party);
         Assert.assertNotNull("No invoices returned.", invoicesForParty);
@@ -145,7 +128,7 @@ public class InvoiceServiceIntTests {
         Party party2 = new Party("Jerry Smith", "Address");
         partyRepository.save(party2);
 
-        createInvoice(party2);
+        TestUtils.createInvoice(party2,invoiceStatus,invoiceService);
 
         List<Invoice> invoicesForParty = invoiceService.getAllInvoices(party);
         Assert.assertNotNull("No invoices returned.", invoicesForParty);

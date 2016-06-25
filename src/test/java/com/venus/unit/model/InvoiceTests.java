@@ -4,7 +4,7 @@ import com.venus.model.Invoice;
 import com.venus.model.InvoiceStatus;
 import com.venus.model.Item;
 import com.venus.model.Party;
-import com.venus.unit.util.TestUtils;
+import com.venus.util.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

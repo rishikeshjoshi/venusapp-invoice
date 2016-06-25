@@ -1,5 +1,7 @@
 package com.venus.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,6 +25,7 @@ public class Party implements Serializable {
     private String address;
 
     @OneToMany(mappedBy = "party")
+    @JsonIgnore
     private Set<Invoice> invoices = new HashSet<Invoice>();
 
     //default constructor

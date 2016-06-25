@@ -1,5 +1,8 @@
 package com.venus.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -24,6 +27,7 @@ public class Item implements Comparable<Item> {
     private BigDecimal lineTotalAmount = new BigDecimal("0.0");
 
     @ManyToOne
+    @JsonIgnore
     private Invoice invoice;
 
     @ManyToOne
@@ -31,6 +35,7 @@ public class Item implements Comparable<Item> {
 
     private String description;
 
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date addedDate = new Date();
 
     Item(){
@@ -85,6 +90,7 @@ public class Item implements Comparable<Item> {
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
         updateLineTotalAmount();
+        this.invoice.calculateNetTotal();
     }
 
     public BigDecimal getLineTotalAmount() {

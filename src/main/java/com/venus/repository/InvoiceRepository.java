@@ -20,4 +20,11 @@ public interface InvoiceRepository extends CrudRepository<Invoice,Long> {
      */
     List<Invoice> findAllByParty(Party party);
 
+    /**
+     * Find invoice by invoice number.
+     * @param invoiceNumber
+     * @return
+     */
+    List<Invoice> findByInvoiceNumber(String invoiceNumber);
+
 }
