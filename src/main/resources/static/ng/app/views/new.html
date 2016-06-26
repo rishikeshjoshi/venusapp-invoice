@@ -1,0 +1,39 @@
+<h1>Create new invoice</h1>
+
+<form name="invoiceForm" ng-submit="submitForm()" novalidate>
+
+  <p ng-visible="invoiceForm.success" class="well success">
+    <b>
+    Successful! Please continue to add invoice items to this invoice.
+    </b>
+  </p>
+
+
+  <!-- Party Name -->
+  <fieldset class="form-group">
+    <label for="partyName">Name*</label>
+    <input type="text" required class="form-control" id="partyName" ng-model="invoiceForm.partyName" placeholder="Party Name">
+    <small class="text-muted">Enter the name of the party. (Required)</small>
+    <p ng-show="invoiceForm.partyName.$invalid && !invoiceForm.partyName.$pristine" class="help-block">Party name is required.</p>
+  </fieldset>
+
+  <!-- Enter Invoice Date -->
+  <fieldset class="form-group">
+    <label for="invoiceDate">Invoice Date*</label>
+    <input type="date" required class="form-control" id="invoiceDate" ng-model="invoiceForm.invoiceDate" placeholder="MM/dd/yyyy">
+    <small class="text-muted">Enter the invoice date. (Required)</small>
+    <p ng-show="invoiceForm.invoiceDate.$invalid && !invoiceForm.invoiceDate.$pristine" class="help-block">Invoice Date is required.</p>
+  </fieldset>
+
+  <!-- Enter Invoice Due Date -->
+  <fieldset class="form-group">
+    <label for="dueDate">Due Date</label>
+    <input type="date" class="form-control" id="dueDate" ng-model="invoiceForm.dueDate" placeholder="MM/dd/yyyy">
+    <small class="text-muted">Enter the invoice due date.</small>
+  </fieldset>
+
+  <!-- Click and Continue to add invoice items -->
+  <button type="submit" ng-disabled="!isValid()"
+          class="btn btn-success">Save and continue to add items</button>
+
+</form>

@@ -33,6 +33,10 @@ public class Party implements Serializable {
 
     }
 
+    public Party(String name) {
+        this(name,null);
+    }
+
     public Party(String name, String address) {
         this.name = name;
         this.address = address;

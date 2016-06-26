@@ -235,6 +235,29 @@ public class InvoiceControllerTests {
 
     }
 
+    @Test
+    public void testInvoiceIsSaved() throws Exception {
+        //Create a new party for the invoice
+        party = new Party("John Smith", "Address");
+        partyRepository.save(party);
+        Assert.assertNotEquals("Party is not saved",new Long(0), party.getId());
 
+        //Create a new invoice
+        Invoice invoice = new Invoice();
+
+        invoice.setInvoiceNumber("INV001");
+        //Set Party
+        invoice.setParty(party);
+
+        //Set Invoice Status
+        invoice.setStatus(invoiceStatus);
+
+        //Set Invoice Date
+        invoice.setInvoiceDate(new Date());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/invoices/save",invoice))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
 
 }

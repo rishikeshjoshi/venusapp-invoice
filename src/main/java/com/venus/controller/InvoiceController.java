@@ -1,19 +1,21 @@
 package com.venus.controller;
 
+import com.venus.dto.NewInvoice;
 import com.venus.model.Invoice;
 import com.venus.model.Party;
+import com.venus.repository.InvoiceStatusRepository;
 import com.venus.repository.PartyRepository;
 import com.venus.service.InvoiceService;
+import com.venus.service.exception.InvoiceServiceErrorCode;
+import com.venus.service.exception.InvoiceServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by hrishikeshjoshi on 6/25/16.
@@ -25,12 +27,14 @@ public class InvoiceController {
 
     private PartyRepository partyRepository;
 
+    private InvoiceStatusRepository invoiceStatusRepository;
+
     @Autowired
     public InvoiceController(@NotNull InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
     }
 
-    @RequestMapping(value = {"/invoices/party/{partyId}"}, method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = {"/api/invoices/party/{partyId}"}, method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<List<Invoice>> getAllInvoicesForParty(@PathVariable Long partyId) {
         Party party = partyRepository.findOne(partyId);
 
@@ -41,9 +45,43 @@ public class InvoiceController {
         return new ResponseEntity<List<Invoice>>(invoiceService.getAllInvoices(party),HttpStatus.OK);
     }
 
-    @RequestMapping(value = {"/invoices"}, method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = {"/api/invoices"}, method = RequestMethod.GET, produces = "application/json")
     public List<Invoice> getAllInvoices() {
         return invoiceService.getAllInvoices();
+    }
+
+    @RequestMapping(value = "/invoices/save", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<Invoice> saveInvoice(@RequestBody @NotNull Invoice invoice) {
+        try {
+            final Invoice resultInvoice = invoiceService.saveInvoice(invoice);
+            return new ResponseEntity<Invoice>(resultInvoice,HttpStatus.OK);
+        } catch (InvoiceServiceException e) {
+            ResponseEntity<Invoice> re = new ResponseEntity<Invoice>(HttpStatus.BAD_REQUEST);
+            final Set<InvoiceServiceErrorCode> errorCodes = e.getErrorCodes();
+        }
+
+        return null;
+    }
+
+    @RequestMapping(value = "/api/invoices/draft", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<Invoice> draftInvoice(@NotNull @RequestBody NewInvoice newInvoice) {
+        final Party party = new Party(newInvoice.getPartyName());
+        partyRepository.save(party);
+
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceDate(newInvoice.getInvoiceDate());
+        invoice.setDueDate(newInvoice.getDueDate());
+        invoice.setParty(party);
+        invoice.setStatus(invoiceStatusRepository.findByValue("DRAFT"));
+
+        try {
+            final Invoice resultInvoice = invoiceService.saveInvoice(invoice);
+            return new ResponseEntity<Invoice>(resultInvoice,HttpStatus.OK);
+        } catch (InvoiceServiceException e) {
+            ResponseEntity<Invoice> re = new ResponseEntity<Invoice>(HttpStatus.BAD_REQUEST);
+            final Set<InvoiceServiceErrorCode> errorCodes = e.getErrorCodes();
+            return re;
+        }
     }
 
     @RequestMapping(value = {"/invoices/{invoiceId}"}, method = RequestMethod.GET, produces = "application/json")
@@ -57,6 +95,10 @@ public class InvoiceController {
         return new ResponseEntity<Invoice>(invoice, HttpStatus.OK);
     }
 
+    @Autowired
+    public void setInvoiceStatusRepository(InvoiceStatusRepository invoiceStatusRepository) {
+        this.invoiceStatusRepository = invoiceStatusRepository;
+    }
 
     @Autowired
     public void setPartyRepository(PartyRepository partyRepository) {
