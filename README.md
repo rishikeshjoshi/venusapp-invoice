@@ -7,4 +7,4 @@ The technology stack is:
 * Spring Boot
 * JPA 
 * RESTful Controllers
-* Angular2 (To be built)
+* Angular2 (In Progress)
