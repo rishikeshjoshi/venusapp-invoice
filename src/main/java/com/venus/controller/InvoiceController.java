@@ -1,7 +1,9 @@
 package com.venus.controller;
 
+import com.venus.dto.AddItemForm;
 import com.venus.dto.NewInvoice;
 import com.venus.model.Invoice;
+import com.venus.model.Item;
 import com.venus.model.Party;
 import com.venus.repository.InvoiceStatusRepository;
 import com.venus.repository.PartyRepository;
@@ -84,7 +86,7 @@ public class InvoiceController {
         }
     }
 
-    @RequestMapping(value = {"/invoices/{invoiceId}"}, method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = {"/api/invoices/{invoiceId}"}, method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Invoice> getInvoice(@PathVariable @NotNull Long invoiceId) {
         final Invoice invoice = invoiceService.getInvoiceById(invoiceId);
 
@@ -93,6 +95,33 @@ public class InvoiceController {
         }
 
         return new ResponseEntity<Invoice>(invoice, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = {"/api/invoices/{invoiceId}/addItem"}, method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<Invoice> addItem(@PathVariable @NotNull Long invoiceId, @RequestBody AddItemForm addItemForm) {
+        final Invoice invoice = invoiceService.getInvoiceById(invoiceId);
+
+        if (invoice == null) {
+            return new ResponseEntity<Invoice>(HttpStatus.NOT_FOUND);
+        }
+
+        invoice.setStatus(invoiceStatusRepository.findByValue("NEW"));
+
+        Item item = new Item(invoice);
+        item.setDescription(addItemForm.getDescription());
+        item.setQuantity(addItemForm.getQuantity());
+        item.setUnitPrice(addItemForm.getUnitPrice());
+        invoice.addLineItem(item);
+
+        try {
+            final Invoice resultInvoice = invoiceService.saveInvoice(invoice);
+            return new ResponseEntity<Invoice>(resultInvoice,HttpStatus.OK);
+        } catch (InvoiceServiceException e) {
+            ResponseEntity<Invoice> re = new ResponseEntity<Invoice>(HttpStatus.BAD_REQUEST);
+            final Set<InvoiceServiceErrorCode> errorCodes = e.getErrorCodes();
+            return re;
+        }
+
     }
 
     @Autowired

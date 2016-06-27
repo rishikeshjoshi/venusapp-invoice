@@ -1,0 +1,100 @@
+<div class="container">
+  <h1>
+    {{invoice.party.name}}
+  </h1>
+
+  <h4>
+    Total Amount : {{invoice.netTotal}}
+  </h4>
+
+  <div class="row">
+    <div class="col-md-6">
+      Invoice Date:
+      {{invoice.invoiceDate|date:'medium'}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      Due Date:
+      {{invoice.dueDate}}
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+
+    <div class="col-md-12 pull-right">
+      <a ng-click="openAddItemForm()">
+        New Item
+      </a>
+    </div>
+
+    <div class="col-md-12" ng-show="showAddItemForm">
+      <div class="well well-lg">
+        <form name="addItemForm" ng-submit="submitForm()" novalidate>
+          <!-- Item description -->
+          <fieldset class="form-group">
+            <label for="description">Description*</label>
+            <input type="text" required class="form-control" id="description" ng-model="addItemForm.description"
+                   placeholder="Item Description">
+            <small class="text-muted">Enter description for the line item. (Required)</small>
+            <p ng-show="invoiceForm.description.$invalid && !invoiceForm.description.$pristine" class="help-block">Description
+              is
+              required.</p>
+          </fieldset>
+
+          <!-- Quantity -->
+          <fieldset class="form-group">
+            <label for="quantity">Quantity*</label>
+            <input type="number" required class="form-control" id="quantity" ng-model="addItemForm.quantity"
+                   placeholder="Quantity">
+            <small class="text-muted">Enter quantity for the line item. (Required)</small>
+            <p ng-show="invoiceForm.quantity.$invalid && !invoiceForm.quantity.$pristine" class="help-block">Quantity
+              is
+              required.</p>
+          </fieldset>
+
+          <fieldset class="form-group">
+            <label for="unitPrice">Price*</label>
+            <input type="number" required class="form-control" id="unitPrice" ng-model="addItemForm.unitPrice"
+                   placeholder="Price">
+            <small class="text-muted">Enter quantity for the line item. (Required)</small>
+            <p ng-show="invoiceForm.unitPrice.$invalid && !invoiceForm.unitPrice.$pristine" class="help-block">Price
+              is
+              required.</p>
+          </fieldset>
+
+          <!-- Click and Continue to add invoice items -->
+          <button type="submit" ng-disabled="invoiceForm.$invalid"
+                  class="btn btn-success">Add line item</button>
+
+        </form>
+      </div>
+    </div>
+    <hr/>
+
+    <div class="col-md-12">
+      <table class="table table-responsive">
+        <thead>
+        <th>Sequence</th>
+        <th>Description</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Line Total Amount</th>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in invoice.items">
+          <td>{{ item.sequenceNumber}}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.unitPrice }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.lineTotalAmount }}</td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>

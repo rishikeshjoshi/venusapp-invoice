@@ -50,7 +50,6 @@ public class Item implements Comparable<Item> {
         final Integer max = optionalInt.isPresent()?optionalInt.getAsInt():new Integer(0);
         this.sequenceNumber = max.intValue() + 1;
 
-        //TODO : Check if this is ok.
         invoice.addLineItem(this);
     }
 
@@ -143,6 +142,6 @@ public class Item implements Comparable<Item> {
 
     @Override
     public int compareTo(Item o) {
-        return this.getSequenceNumber().compareTo(o.getSequenceNumber());
+        return o.getSequenceNumber().compareTo(this.getSequenceNumber());
     }
 }

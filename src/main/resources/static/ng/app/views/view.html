@@ -1,0 +1,49 @@
+<div class="well">
+  <a href="/invoices/#/" class="btn btn-default">
+    Back to All Invoices
+  </a>
+
+  <a href="/invoices/#/edit/{{invoice.id}}" class="btn btn-default">
+    Edit Invoice
+  </a>
+
+</div>
+
+
+<div class="container">
+  <h1>
+    {{invoice.party.name}}
+  </h1>
+
+  <h4>
+    Invoice Date : {{invoice.invoiceDate}} |
+    Total Amount : {{invoice.netTotal}} |
+    Due Date : {{invoice.dueDate}}
+  </h4>
+
+  <hr/>
+
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-responsive">
+        <thead>
+        <th>Sequence</th>
+        <th>Description</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Line Total Amount</th>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in invoice.items">
+          <td>{{ item.sequenceNumber}}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.unitPrice }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.lineTotalAmount }}</td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>

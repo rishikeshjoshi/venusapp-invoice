@@ -8,7 +8,7 @@
  * Controller of the ngInvoiceApp
  */
 angular.module('ngInvoiceApp')
-  .controller('NewInvoiceCtrl', function ($scope,$http) {
+  .controller('NewInvoiceCtrl', function ($scope,$http,$location) {
 
     /**
     * Check is invoice form is valid to be submitted or not
@@ -35,9 +35,66 @@ angular.module('ngInvoiceApp')
 
           $http.post("/api/invoices/draft/", data).success(function(data, status) {
              $scope.invoiceForm.success = true;
-
+             $location.path("/edit/" + data.id);
           });
 
     };
-}
+  }
+}).controller('AddInvoiceItemCtrl', function ($scope,$http,$location,$routeParams) {
+
+    //Invoice Id
+    $scope.invoiceId = $routeParams.invoiceId;
+
+    $http.get('/api/invoices/' + $scope.invoiceId)
+        .success(function(data, status, headers, config) {
+          $scope.invoice = data;
+          console.log("Invoice Items" + data.items);
+        })
+        .error(function(data, status, headers, config) {
+          $scope.error = true;
+          alert('There was something wrong. Could not retrieve information for the invoice.');
+        });
+
+    $scope.openAddItemForm = function() {
+      $scope.showAddItemForm = true;
+    }
+
+    $scope.submitForm = function() {
+
+      var data = {
+                  description : $scope.addItemForm.description,
+                  quantity : $scope.addItemForm.quantity,
+                  unitPrice : $scope.addItemForm.unitPrice,
+                }
+
+                $http.post("/api/invoices/" + $scope.invoiceId + "/addItem/", data)
+                .success(function(data, status) {
+                    if(status == 200) {
+                     $scope.addItemForm.success = true;
+                     $scope.invoice = data;
+                     $scope.items = data.items;
+                     $scope.showAddItemForm = false;
+
+                     //Clear the form.
+                     $scope.addItemForm = {};
+
+                    } else {
+                      alert('There was something wrong.');
+                    }
+                });
+    }
+}).controller('ViewInvoiceCtrl', function ($scope,$http,$location,$routeParams) {
+
+      //Invoice Id
+      $scope.invoiceId = $routeParams.invoiceId;
+
+      $http.get('/api/invoices/' + $scope.invoiceId)
+          .success(function(data, status, headers, config) {
+            $scope.invoice = data;
+            console.log("Invoice Items" + data.items);
+          })
+          .error(function(data, status, headers, config) {
+            $scope.error = true;
+            alert('There was something wrong. Could not retrieve information for the invoice.');
+          });
 });

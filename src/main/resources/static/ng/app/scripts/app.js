@@ -30,6 +30,16 @@ angular
          controller: 'NewInvoiceCtrl',
          controllerAs: 'newInvoice'
       })
+      .when('/edit/:invoiceId', {
+         templateUrl: '/ng/app/views/addItem.html',
+         controller: 'AddInvoiceItemCtrl',
+         controllerAs: 'addItem'
+      })
+      .when('/view/:invoiceId', {
+         templateUrl: '/ng/app/views/view.html',
+         controller: 'ViewInvoiceCtrl',
+         controllerAs: 'viewInvoice'
+      })
       .when('/about', {
         templateUrl: '/ng/app/views/about.html',
         controller: 'AboutCtrl',
